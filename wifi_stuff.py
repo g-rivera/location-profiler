@@ -46,23 +46,21 @@ def wifi_dialog(networklist):
     droid.dialogShow()
     droid.dialogGetResponse()
     choice = droid.dialogGetSelectedItems().result
-    #return choice
+
     for i in choice:
         selected_wifi.append(networklist[i])
-    #return selected_wifi
 
 def wifi_main_add_profile():
     """
 	Combines all subroutines of wifi module. This function gets called by
         add_profile() in locater_menu module. Toggles wifi off after scan.
     """
-    #print 'wifi state is: ' , wifistate
     wifi_scan()
     networks = droid.wifiGetScanResults().result
     clean_networks_for_output(networks)
     wifi_dialog(networks)
     droid.toggleWifiState()
-    if len(selected_wifi) < 0:
+    if len(selected_wifi) > 0:
         flag = True
     else: flag = False
 
