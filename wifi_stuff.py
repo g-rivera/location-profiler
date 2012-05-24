@@ -13,8 +13,8 @@ source_dir = '/mnt/sdcard/sl4a/scripts/settings'
 
 def wifi_scan():
     """
-	    Checks wifi state, toggles. Brings up 'scanning' alert.
-	"""
+        Checks wifi state, toggles. Brings up 'scanning' alert.
+    """
     if wifistate == False:
         droid.toggleWifiState()
         droid.dialogCreateSpinnerProgress("SCANNING", "Finding Wifi Networks")
@@ -28,8 +28,8 @@ def wifi_scan():
 
 def clean_networks_for_output(networklist):
     """
-	    Removes un-necessary info from wifi scan results
-	"""
+        Removes un-necessary info from wifi scan results
+    """
     for i in networklist:
         del i['level']
         del i['capabilities']
@@ -37,8 +37,8 @@ def clean_networks_for_output(networklist):
 
 def wifi_dialog(networklist):
     """
-		Displays dialog with list of available wifi networks.
-	"""
+        Displays dialog with list of available wifi networks.
+    """
     title = 'Select Wifi Network(s) to Associate with Profile'
     droid.dialogCreateAlert(title)
     droid.dialogSetMultiChoiceItems(networklist)
@@ -53,9 +53,9 @@ def wifi_dialog(networklist):
 
 def wifi_main_add_profile():
     """
-		Combines all subroutines of wifi module. This function gets called by
+	Combines all subroutines of wifi module. This function gets called by
         add_profile() in locater_menu module. Toggles wifi off after scan.
-	"""
+    """
     #print 'wifi state is: ' , wifistate
     wifi_scan()
     networks = droid.wifiGetScanResults().result
@@ -68,21 +68,21 @@ def wifi_main_add_profile():
 
 def wifi_log(latest_scan_results):
     """
-	    This function writes the latest scan results to a log file. The results
+	This function writes the latest scan results to a log file. The results
         are written directly into the file as a list of dictionaries using
         repr(). Each time there is a scan, the file is overwritten with the
         latest results.
-	"""
+    """
     log = open(source_dir + '/log','w')
     log.write(repr(latest_scan_results))
     log.close()
 
 def parse_log():
     """
-	    Parses log file and returns list of dictionaries that contains
+	Parses log file and returns list of dictionaries that contains
         wifi network info. Assign parse_log() to a varaiable to do the
         comparison.
-	"""
+    """
     file = open(source_dir + '/log','r')
     line = file.read()
     line.strip('\n')
@@ -91,10 +91,10 @@ def parse_log():
 
 def wifi_bg_scanner():
     """
-	    Prototype background scanner function. Checks if wifi is on.
-	    Toggles wifi, does the wifi scan, collects results into bg_networks
+	Prototype background scanner function. Checks if wifi is on.
+	Toggles wifi, does the wifi scan, collects results into bg_networks
         variable, and then writes the list of dictionaries into the log file.
-	"""
+    """
     while True:
         if wifistate == False:
             droid.toggleWifiState()
