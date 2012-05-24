@@ -37,7 +37,8 @@ def clean_networks_for_output(networklist):
 
 def wifi_dialog(networklist):
     """
-        Displays dialog with list of available wifi networks.
+        Displays dialog with list of available wifi networks. 
+        Appends selected networks to settings file.
     """
     title = 'Select Wifi Network(s) to Associate with Profile'
     droid.dialogCreateAlert(title)
