@@ -38,7 +38,7 @@ def apply_profile(profile_name):
     Apply the settings contained in the profile named profile name
     to the phone.
     """
-    print profile_name
+
     #Apply the settings in that profile to the phone
     locator_menu.apply_settings(profile_name)
 
@@ -67,12 +67,12 @@ if __name__=='__main__':
         #Get a list of current wifi networks first since it is
         #faster than getting gps
         current_networks=wifi_stuff.wifi_scan()
-        print current_networks
+ 
 
         #Try to find a profile that includes at least one of the wifi
         #networks present
         profile=locator_menu.find_profile(wifi_networks=current_networks)
-        print profile
+
         #If we were able to find a network other than the default
         if profile !="DEFAULT":
 
