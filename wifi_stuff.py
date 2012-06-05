@@ -13,7 +13,7 @@ def wifi_scan():
     #If wifi is off
     if wifistate == False:
         #turn it on
-        droid.toggleWifiState()
+        droid.toggleWifiState(True)
         print "turned on wifi"
         time.sleep(8)
     droid.wifiStartScan()
@@ -26,7 +26,7 @@ def wifi_scan():
 
             #if wifi is still on
             if wifistate:
-                droid.toggleWifiState()
+                droid.toggleWifiState(False)
                 print "turned off wifi"
                 
         #Removes un-necessary info from wifi scan results
@@ -45,8 +45,13 @@ def get_selected_wifi(network_list):
         Displays dialog with list of available wifi networks. 
         Appends selected networks to settings file.
     """
+
+    #Initialize selected networks
     selected_networks=[]
     if network_list:
+
+        #Prepare and show a pick-list consisting
+        #of human readable network identifiers
         title = 'Select Wifi Network(s) to Associate with Profile'
         droid.dialogCreateAlert(title)
         display_list=[]
@@ -55,15 +60,42 @@ def get_selected_wifi(network_list):
         droid.dialogSetMultiChoiceItems(display_list)
         droid.dialogSetPositiveButtonText('Select')
         droid.dialogShow()
+
+        #Get the user selections
         droid.dialogGetResponse()
         for item in droid.dialogGetSelectedItems().result:
+            #Add selections to returned list
             selected_networks.append(network_list[item])
-
+            
+    #Return user selections
     return selected_networks
 
 
 if __name__ == '__main__':
-    # run wifi_stuff.py alone to see how the logger behaves
-    networks= wifi_scan()
-    selected_networks=get_selected_wifi(networks)
+    # Test: run wifi_stuff.py alone in the presence of 
+    # a stable wifi networks and see if it ever fails
+    # find it
 
+    #mac address of stable wifi network access point
+    test_mac='c0:c1:c0:ac:c1:31'
+    #Number of tests to perform
+    test_cnt=30
+    
+    for i in range(0,test_cnt):
+        networks= wifi_scan()
+        
+        if networks==[]:
+            print "FAIL--No networks"
+        else:
+            found_network=False
+            for network in networks:
+                if network['bssid']==test_mac:
+                    found_network=True
+                    break
+            if found_network:
+                print "PASS--%s found"  % test_mac
+            else:
+                print "FAIL--%s not found" % test_mac
+           
+        
+        time.sleep(3)
