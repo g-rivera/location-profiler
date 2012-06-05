@@ -84,7 +84,7 @@ if __name__=='__main__':
 
             #Let the class know that a profile has been activated
             #based on the presence of wifi networks
-            droid.makeToast("% profile applied from wifi networks" % profile)
+            droid.makeToast("%s profile applied from wifi networks" % profile)
 
             #Set the polling interval to that indicated by the profile
             interval=get_polling_interval(profile)
@@ -111,5 +111,5 @@ if __name__=='__main__':
                 
                 #Set the polling interval to that indicated by the profile
                 interval=get_polling_interval(profile)        
-        print "---" + profile
+        
         time.sleep(interval)
