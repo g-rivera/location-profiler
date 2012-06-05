@@ -65,7 +65,5 @@ def get_selected_wifi(network_list):
 if __name__ == '__main__':
     # run wifi_stuff.py alone to see how the logger behaves
     networks= wifi_scan()
-    print networks
-    print
     selected_networks=get_selected_wifi(networks)
-    print selected_networks
+
