@@ -31,7 +31,7 @@ def get_polling_interval(profile_name):
             
     #Close the setting file
     setting_file.close()
-
+    return interval
     
 def apply_profile(profile_name):
     """
@@ -59,7 +59,7 @@ if __name__=='__main__':
 
         #Show the class that polling is happening
         droid.dialogCreateSpinnerProgress("SCANNING LOCATION", "POLLING")
-        #droid.dialogShow()
+        droid.dialogShow()
 
         #Give the dialog time to start
         time.sleep(3)
@@ -80,7 +80,7 @@ if __name__=='__main__':
             apply_profile(profile)
             
             #Get rid of the progress form.  We are done scanning.
-            #droid.dialogDismiss()
+            droid.dialogDismiss()
 
             #Let the class know that a profile has been activated
             #based on the presence of wifi networks
@@ -103,13 +103,13 @@ if __name__=='__main__':
                 
                 apply_profile(profile)
                 #Get rid of the progress form.  We are done scanning.
-                #droid.dialogDismiss()
+                droid.dialogDismiss()
 
                 #Let the class know that a profile has been activated
                 #based on gps location
-                droid.makeToast("% profile applied from GPS location" % profile)
+                droid.makeToast("%s profile applied from GPS location" % profile)
                 
                 #Set the polling interval to that indicated by the profile
                 interval=get_polling_interval(profile)        
-        
+        print "---" + profile
         time.sleep(interval)
