@@ -26,7 +26,7 @@ def main():
         f = open(LOG, "w")
         f.close()
     LOG = open(LOG, "a")
-    print "starting BG process"
+    
     droid.startActivityIntent(myintent)
     LOG.write("Starting %s\n" % STARTUP_SCRIPT)   
     init()
@@ -344,7 +344,7 @@ def apply_settings(name):
             else:
                 droid.toogleAirplaneMode(False)
         '''
-        print line
+        
         if "Bluetooth On" in line:
             curr = line.split(':')[1]
             if curr.strip("\n") == "True":
@@ -354,7 +354,7 @@ def apply_settings(name):
         if "Ringer Silent" in line:
             curr = line.split(':')[1]
             if curr.strip("\n") == "True":
-                print "turned ringer off"
+                
                 droid.toggleRingerSilentMode(True)
             else:
                 droid.toggleRingerSilentMode(False)
@@ -431,7 +431,7 @@ def find_profile(gps_location={},wifi_networks=[]):
     """
     profile_dir=script_dir
     gps_profile=''
-    print wifi_networks
+    
     #Get the name of a profile with GPS data matching the
     #supplied location
     if gps_location!={}:
@@ -439,7 +439,7 @@ def find_profile(gps_location={},wifi_networks=[]):
 
     #If a match was found
     if gps_profile:
-        print "gps"
+        
         #Return it
         return gps_profile
     
