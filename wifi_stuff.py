@@ -1,119 +1,71 @@
 import time, ast
 import android
-import locator_menu
 
 droid = android.Android()
 
-wifistate = droid.checkWifiState().result
-networks = []
-selected_wifi = []
-bg_networks = []
-flag = True
-source_dir = '/mnt/sdcard/sl4a/scripts/settings'
 
 def wifi_scan():
     """
         Checks wifi state, toggles. Brings up 'scanning' alert.
     """
+    wifistate = droid.checkWifiState().result
+    
+    #If wifi is off
     if wifistate == False:
+        #turn it on
         droid.toggleWifiState()
-        droid.dialogCreateSpinnerProgress("SCANNING", "Finding Wifi Networks")
-        droid.dialogShow()
+        print "turned on wifi"
         time.sleep(8)
-        droid.wifiStartScan()
+    droid.wifiStartScan()
+    network_list=droid.wifiGetScanResults().result
+    if network_list:
+        #if wifi was off
+        if wifistate == False:
+            #get the current wifi state
+            wifistate = droid.checkWifiState().result
+
+            #if wifi is still on
+            if wifistate:
+                droid.toggleWifiState()
+                print "turned off wifi"
+                
+        #Removes un-necessary info from wifi scan results
+        for i in network_list:
+            del i['level']
+            del i['capabilities']
+            del i['frequency']
+            
+            
+        return network_list
     else:
-        droid.dialogCreateSpinnerProgress("SCANNING", "Finding Wifi Networks")
-        droid.dialogShow()
-        droid.wifiStartScan()
+        return []
 
-def clean_networks_for_output(networklist):
-    """
-        Removes un-necessary info from wifi scan results
-    """
-    for i in networklist:
-        del i['level']
-        del i['capabilities']
-        del i['frequency']
-
-def wifi_dialog(networklist):
+def get_selected_wifi(network_list):
     """
         Displays dialog with list of available wifi networks. 
         Appends selected networks to settings file.
     """
-    title = 'Select Wifi Network(s) to Associate with Profile'
-    droid.dialogCreateAlert(title)
-    droid.dialogSetMultiChoiceItems(networklist)
-    droid.dialogSetPositiveButtonText('Select')
-    droid.dialogShow()
-    droid.dialogGetResponse()
-    choice = droid.dialogGetSelectedItems().result
+    selected_networks=[]
+    if network_list:
+        title = 'Select Wifi Network(s) to Associate with Profile'
+        droid.dialogCreateAlert(title)
+        display_list=[]
+        for network in network_list:
+            display_list.append( network['ssid'])
+        droid.dialogSetMultiChoiceItems(display_list)
+        droid.dialogSetPositiveButtonText('Select')
+        droid.dialogShow()
+        droid.dialogGetResponse()
+        for item in droid.dialogGetSelectedItems().result:
+            selected_networks.append(network_list[item])
 
-    for i in choice:
-        selected_wifi.append(networklist[i])
+    return selected_networks
 
-def wifi_main_add_profile():
-    """
-	Combines all subroutines of wifi module. This function gets called by
-        add_profile() in locater_menu module. Toggles wifi off after scan.
-    """
-    wifi_scan()
-    networks = droid.wifiGetScanResults().result
-    clean_networks_for_output(networks)
-    wifi_dialog(networks)
-    droid.toggleWifiState()
-    if len(selected_wifi) > 0:
-        flag = True
-    else: flag = False
-
-def wifi_log(latest_scan_results):
-    """
-	This function writes the latest scan results to a log file. The results
-        are written directly into the file as a list of dictionaries using
-        repr(). Each time there is a scan, the file is overwritten with the
-        latest results.
-    """
-    log = open(source_dir + '/log','w')
-    log.write(repr(latest_scan_results))
-    log.close()
-
-def parse_log():
-    """
-	Parses log file and returns list of dictionaries that contains
-        wifi network info. Assign parse_log() to a varaiable to do the
-        comparison.
-    """
-    file = open(source_dir + '/log','r')
-    line = file.read()
-    line.strip('\n')
-    wifi_list = ast.literal_eval(line)
-    return wifi_list
-
-def wifi_bg_scanner():
-    """
-	Prototype background scanner function. Checks if wifi is on.
-	Toggles wifi, does the wifi scan, collects results into bg_networks
-        variable, and then writes the list of dictionaries into the log file.
-    """
-    while True:
-        if wifistate == False:
-            droid.toggleWifiState()
-            time.sleep(8)
-            droid.wifiStartScan()
-            bg_networks = droid.wifiGetScanResults().result
-            clean_networks_for_output(bg_networks)
-            wifi_log(bg_networks)
-            droid.toggleWifiState()
-        else:
-            droid.wifiStartScan()
-            time.sleep(5)
-            bg_networks = droid.wifiGetScanResults().result
-            clean_networks_for_output(bg_networks)
-            wifi_log(bg_networks)
-            droid.toggleWifiState()
-        time.sleep(30)
-        log = parse_log()
-        print log
 
 if __name__ == '__main__':
     # run wifi_stuff.py alone to see how the logger behaves
-    wifi_bg_scanner()
+    networks= wifi_scan()
+    print networks
+    print
+    selected_networks=get_selected_wifi(networks)
+    print selected_networks
