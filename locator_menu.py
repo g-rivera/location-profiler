@@ -422,53 +422,116 @@ def set_current_profile(name):
     apply_settings(name)
     
 def find_profile(gps_location={},wifi_networks=[]):
-    profile_dir=script_dir
-    if gps_location!={}: 
-        gps_profile=find_gps_in_profiles(profile_dir,gps_location)
-        if gps_profile:
-            print "Found GPS Profile %s" % gps_profile
-            return gps_profile
-    
-    if wifi_networks<>():
-        for network in wifi_networks:
-            
-            profile_name=find_wifi_in_profiles(profile_dir,network['bssid'])
-            if profile_name:
-                return profile_name
-            else:
-                return "DEFAULT"
+    """
+    Return the name of the first profile that matches
+    either the supplied gps location or the supplied
+    list of wifi networks.  If ther is no match, return
+    'DEFAULT'.
 
+    """
+    profile_dir=script_dir
+    gps_profile=''
+    print wifi_networks
+    #Get the name of a profile with GPS data matching the
+    #supplied location
+    if gps_location!={}:
+        gps_profile=find_gps_in_profiles(profile_dir,gps_location)
+
+    #If a match was found
+    if gps_profile:
+        print "gps"
+        #Return it
+        return gps_profile
+    
+    #If networks were supplied
+    if wifi_networks:
+        
+        #Go through the list of networks
+        for network in wifi_networks:
+
+            #See if the current network yields a match
+            profile_name=find_wifi_in_profiles(profile_dir,network['bssid'])
+
+            #If a match was found
+            if profile_name:
+                #Return the match
+                return profile_name
+        return "DEFAULT"   
+    else:
+        return "DEFAULT"
+    
 def find_wifi_in_profiles(profile_dir,mac_address):
+    """
+    Look for profiles containing the supplied mac address
+    ,in the specified profile direcory, and return the
+    name of the found profile if there is one.
+
+    """
     file_names=os.listdir(profile_dir)
     
-    
+    #For each profile filename
     for file_name in file_names:
-        
+
+        #Open the profile
         setting_file=open(profile_dir + '/' + file_name)
+
+        #If the supplied mac address is in the profile
         if setting_file.read().find(mac_address)!=-1:
             setting_file.close()
             profile_found=True
+
+            #return the name of that profile
             return file_name
         setting_file.close()
         
 def find_gps_in_profiles(profile_dir,gps_position):
+    """
+    Look for a profile with a GPS position that matches that
+    of gps_position.
+
+    A match occurs between a stored location on the provided
+    location if the average of the supplied accuracy and the
+    stored accuracy is greater than the distance between the
+    stored GPS co-ordiates and the provided GPS co-ordinates.
+
+    """
+
+    #get a list of profile file names
     file_names=os.listdir(profile_dir)
     for file_name in file_names:
-        
+    
+        #open a profile
         setting_file=open(profile_dir + '/' + file_name)
+
+
         for line in setting_file:
-            if line.find("Profile_location: ")>-1:
-                gps=line[line.find(": ")+2:].replace('\n','').replace('\r','')
-                print str(gps) + '...'
+            #If the current line contains a location
+            if line.find("Profile_location:")>-1:
+
+                #parse the GPS information
+                gps=line[line.find(":")+1:].replace('\n','').replace('\r','')
+
+                #turn the string dict into a python dict
+
                 gps=eval(gps)
+
+                #If the result is not an empty dict
                 if gps!={}:
+
+                    #get the distance between the stored co-ordinates and the supplied co-ordinates
                     distance=gps_stuff.calc_distance((gps['lat'],gps['lng']),(gps_position['lat'],gps_position['lng']))
+
+                    #If the distance is les than or equal to the average of the supplied
+                    #accuracy and the stored accuracy
                     if distance <= (gps['accuracy']+gps_position['accuracy'])/2:
+                        setting_file.close()
+                        #Return the name of the found profile
                         return file_name
                     
         setting_file.close()
         
 if __name__ == "__main__":
     sys.exit(main())
+        
 
 
