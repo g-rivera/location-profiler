@@ -6,7 +6,16 @@ droid = android.Android()
 
 def wifi_scan():
     """
-        Checks wifi state, toggles. Brings up 'scanning' alert.
+        Checks wifi state, toggles. Scans for surrounding networks
+
+        Pre-condition:
+        If wifi antenna is off, turn it on. Else, begin scan.
+
+        Post-condition:
+        Returns a list of dicts containing network name and mac address
+        of available networks.
+        If no networks are fount, returns empty list.
+
     """
     wifistate = droid.checkWifiState().result
     
@@ -44,6 +53,15 @@ def get_selected_wifi(network_list):
     """
         Displays dialog with list of available wifi networks. 
         Appends selected networks to settings file.
+
+        Pre-condition:
+        network_list argument is a list populated with available
+        networks in the surrounding area.
+
+        Post-condition:
+        returns list of user-selected networks as a list of
+        dictionaries.
+        
     """
 
     #Initialize selected networks
