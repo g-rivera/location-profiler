@@ -14,7 +14,7 @@ def wifi_scan():
     if wifistate == False:
         #turn it on
         droid.toggleWifiState(True)
-        print "turned on wifi"
+        
         time.sleep(8)
     droid.wifiStartScan()
     network_list=droid.wifiGetScanResults().result
@@ -27,7 +27,7 @@ def wifi_scan():
             #if wifi is still on
             if wifistate:
                 droid.toggleWifiState(False)
-                print "turned off wifi"
+                
                 
         #Removes un-necessary info from wifi scan results
         for i in network_list:
