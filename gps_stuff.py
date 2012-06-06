@@ -23,7 +23,7 @@ def poll_gps(wait_timeout=20,droid=android.Android()):
     avg_lat=0
     avg_lng=0
     ret_val={}
-    print "hello"
+    
 
     #Attempt to get gurrent location
     droid.startLocating()
